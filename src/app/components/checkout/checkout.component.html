@@ -1,0 +1,353 @@
+<div class="main-content page-m">
+  <div class="section-content section-content-p30">
+    <div class="container-fluid">
+
+      <form [formGroup]="checkoutFormGroup" (ngSubmit)="onSubmit()">
+
+        <!--Customer Form Group-->
+        <div formGroupName="customer" class="form-area">
+          <h3>Customer</h3>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>First Name</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="firstName" type="text">
+                <!--Conditional Error Message starts here-->
+                <div *ngIf="firstName?.invalid && (firstName?.dirty || firstName?.touched)" class="alert alert-danger mt-1">
+
+                  <div *ngIf="firstName?.errors?.['required']">
+                    First Name is required
+                  </div>
+
+                  <div *ngIf="firstName?.errors?.['minlength']">
+                    First Name should be at least 2 characters long
+                  </div>
+
+                </div>
+                <!--Error Message ends here-->
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Last Name</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="lastName" type="text">
+                <!--Error Message starts here-->
+                <div *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)" class="alert alert-danger mt-1">
+
+                  <div *ngIf="lastName?.errors?.['required']">
+                    Last Name is required
+                  </div>
+
+                  <div *ngIf="lastName?.errors?.['minlength']">
+                    Last name must be at least 2 characters long
+                  </div>
+
+                </div>
+                <!--Error Message ends here-->
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Email</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="email" type="text">
+                <!-- Conditoinal error mssg starts here -->
+                <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="alert alert-danger mt-1">
+
+                  <div *ngIf="email?.errors?.['required']">
+                    Email is required
+                  </div>
+
+                  <div *ngIf="email?.errors?.['pattern']">
+                    Email is Invalid
+                  </div>
+                </div>
+                <!-- Conditional error mssg ends here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!--Shipping address Form Group-->
+        <div formGroupName="shippingAddress" (ngSubmit)="onSubmit()" class="form-area">
+          <h3>Shipping Address</h3>
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Country</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <select formControlName="country" (change)="getStates('shippingAddress')">
+                  <option *ngFor="let country of countries" [ngValue]="country">
+                    {{country.name}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>State</label></div>
+            <div class="col-md-9">
+
+              <div class="input-space">
+                <select formControlName="state">
+                  <option *ngFor="let state of shippingAddressStates" [ngValue]="state">
+                    {{state.name}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Street</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="street" type="text">
+                <!--Conditional Error Message starts here-->
+                <div *ngIf="street?.invalid && (street?.dirty || street?.touched)" class="alert alert-danger mt-1">
+
+                  <div *ngIf="street?.errors?.['required']">
+                    Street Name is required
+                  </div>
+
+                  <div *ngIf="street?.errors?.['minlength']">
+                    Street Name must be at least 3 characters long
+                  </div>
+
+                </div>
+                <!--Conditional Error Message ends here-->
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>City</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="city" type="text">
+                <!--Conditional Error Message starts here-->
+                <div *ngIf="city?.invalid && (city?.dirty || city?.touched)" class="alert alert-danger mt-1">
+
+                  <div *ngIf="city?.errors?.['required']">
+                    City Name is required
+                  </div>
+
+                  <div *ngIf="city?.errors?.['minlength']">
+                    City Name must be at least 3 characters long
+                  </div>
+
+                </div>
+                <!--Conditional Error Message ends here-->
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Zip Code</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="zipCode" type="text">
+                <!--Conditional Error Message starts here-->
+                <div *ngIf="zipCode?.invalid && (zipCode?.dirty || zipCode?.touched)" class="alert alert-danger mt-1">
+
+                  <div *ngIf="zipCode?.errors?.['required']">
+                    Proper Zip Code is required
+                  </div>
+
+                  <div *ngIf="zipCode?.errors?.['pattern']">
+                    Proper Zip Code is Invalid
+                  </div>
+
+                </div>
+                <!--Conditional Error Message ends here-->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--Add checkbox to copy shipping address for billing address-->
+        <div class="input-space">
+          <div class="input-group-text">
+            <input #input class="form-check-input mt-0" type="checkbox" (click)="copyShippindToBilling($event)">
+            <span style="margin-left: 10px;">Billing Address same as Shipping Address</span>
+          </div>
+        </div>
+
+        <!--Billing address Form Group-->
+        <div formGroupName="billingAddress" (ngSubmit)="onSubmit()" class="form-area">
+          <h3>Billing Address</h3>
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Country</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <select formControlName="country" (change)="getStates('billingAddress')">
+                  <option *ngFor="let country of countries" [ngValue]="country">
+                    {{country.name}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>State</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <select formControlName="state">
+                  <option *ngFor="let state of billingAddressStates" [ngValue]="state">
+                    {{state.name}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Street</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="street" type="text">
+                <!--Conditional Error Message starts here-->
+                <div *ngIf="street?.invalid && (street?.dirty || street?.touched)" class="alert alert-danger mt-1">
+
+                  <div *ngIf="street?.errors?.['required']">
+                    Street Name is required
+                  </div>
+
+                  <div *ngIf="street?.errors?.['minlength']">
+                    Street Name must be at least 3 characters long
+                  </div>
+
+                </div>
+                <!--Conditional Error Message ends here-->
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>City</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="city" type="text">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Zip Code</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="zipCode" type="text">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--Credit card Form Group-->
+        <div formGroupName="creditCard" (ngSubmit)="onSubmit()" class="form-area">
+          <h3>Credit Card</h3>
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Card Type</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <select formControlName="cardType">
+                  <option>Visa</option>
+                  <option>Master Card</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2"><label>Name on Card</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="nameOnCard" type="text">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-1"><label>Card Number</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="cardNumber" type="text">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 "><label>Security Code</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="securityCode" type="text">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2 mt-2"><label>Exp Year</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <select formControlName="expYear" (change)="handleMonthsAndYears()">
+                  <option *ngFor="let year of creditCardYears">
+                    {{year}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2"><label>Exp Month</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <select formControlName="expMonth">
+                  <option *ngFor="let month of creditCardMonths">
+                    {{month}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+
+
+        <!--Review Order Form Group-->
+        <div class="form-area">
+          <h3>Review Your Order</h3>
+          <div class="row" >
+
+            <table>
+              <tr>
+                <td>
+                  <p >Your Quantity: {{totalQuantity}}</p>
+                  <p class="mt-3">Shipping: FREE</p>
+                  <p class="mt-3">Your Price: {{totalPrice | currency: 'USD'}}</p>
+                </td>
+              </tr>
+            </table>
+
+          </div>
+        </div>
+
+        <div class="text-center" >
+          <button type="submit" [disabled]="!checkoutFormGroup.valid" class="btn btn-info">Purchase</button>
+        </div>
+      </form>
+
+
+    </div>
+  </div>
+</div>
+
